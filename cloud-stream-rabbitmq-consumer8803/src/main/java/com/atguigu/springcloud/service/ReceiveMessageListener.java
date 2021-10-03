@@ -13,6 +13,7 @@ public class ReceiveMessageListener {
     @Value("${server.port}")
     private String serverPort;
 
+    //监听消息并进行消费
     @StreamListener(Sink.INPUT)
     public void input(Message<String> message) {
         System.out.println("消费者2号，------->接收到的消息：" + message.getPayload() + "\t port: " + serverPort);
