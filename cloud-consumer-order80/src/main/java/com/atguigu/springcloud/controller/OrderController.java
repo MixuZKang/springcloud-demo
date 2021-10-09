@@ -62,27 +62,35 @@ public class OrderController {
     public CommonResult<Payment> getPayment02(@PathVariable("id") Long id) {
         ResponseEntity<CommonResult> entity = restTemplate.getForEntity(PAYMENT_SRV + "/payment/get/" + id, CommonResult.class);
         //如果返回的状态码为2xx，即成功调用
-        if(entity.getStatusCode().is2xxSuccessful()){
+        if (entity.getStatusCode().is2xxSuccessful()) {
             //获取请求体并返回
             return entity.getBody();
-        }else {
-            return new CommonResult<>(404,"操作失败");
+        } else {
+            return new CommonResult<>(404, "操作失败");
         }
     }
 
+    //测试负载均衡
     @GetMapping("/consumer/payment/lb")
     public String getPaymentLB() {
         //通过指定服务名称获取该名称下所有微服务的集合 -->  payment8002,payment8001
         List<ServiceInstance> instances = discoveryClient.getInstances("CLOUD-PAYMENT-SERVICE");
-        if(instances == null || instances.size()<=0) {
+        if (instances == null || instances.size() <= 0) {
             return null;
         }
         //调用自定义的负载均衡算法并返回服务实例
         ServiceInstance serviceInstance = loadBalancer.getInstances(instances);
         URI uri = serviceInstance.getUri();
         //通过获取到的uri远程调用服务 8001或8002
-        return restTemplate.getForObject(uri+"/payment/lb",String.class);
+        return restTemplate.getForObject(uri + "/payment/lb", String.class);
 
+    }
+
+    //测试zipkin+sleuth
+    @GetMapping("/consumer/payment/zipkin")
+    public String paymentZipkin() {
+        String result = restTemplate.getForObject("http://localhost:8001" + "/payment/zipkin/", String.class);
+        return result;
     }
 
 }

@@ -72,7 +72,7 @@ public class PaymentController {
         return this.discoveryClient;
     }
 
-    //返回当前应用端口
+    //返回当前应用端口，测试负载均衡调用
     @GetMapping(value = "/payment/lb")
     public String getPaymentLB() {
         return serverPort;
@@ -89,5 +89,11 @@ public class PaymentController {
             e.printStackTrace();
         }
         return serverPort;
+    }
+
+    //测试zipkin
+    @GetMapping("/payment/zipkin")
+    public String paymentZipkin() {
+        return "hi ,i'am paymentzipkin server fall back";
     }
 }
