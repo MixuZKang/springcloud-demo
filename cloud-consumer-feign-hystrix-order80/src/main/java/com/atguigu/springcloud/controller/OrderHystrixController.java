@@ -7,11 +7,14 @@ import com.atguigu.springcloud.entities.Payment;
 import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+import jdk.nashorn.internal.ir.annotations.Reference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
 
 @RestController
 @Slf4j
@@ -19,12 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @DefaultProperties(defaultFallback = "payment_Global_FallbackMethod")
 public class OrderHystrixController {
 
-    @Autowired
-    private PaymentHystrixFeignClient PaymentHystrixFeignClient;
+    @Resource
+    private PaymentHystrixFeignClient feignClient;
 
     @GetMapping("/consumer/payment/hystrix/ok/{id}")
     public String paymentInfo_OK(@PathVariable("id") Integer id) {
-        String result = PaymentHystrixFeignClient.paymentInfo_OK(id);
+        String result = feignClient.paymentInfo_OK(id);
         return result;
     }
 
@@ -35,7 +38,7 @@ public class OrderHystrixController {
     })*/
     @HystrixCommand //如果加了@DefaultProperties属性注解，并且指定写具体方法名字，就用统一全局的
     public String paymentInfo_TimeOut(@PathVariable("id") Integer id) {
-        String result = PaymentHystrixFeignClient.paymentInfo_TimeOut(id);
+        String result = feignClient.paymentInfo_TimeOut(id);
         return result;
     }
 
